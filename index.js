@@ -6,7 +6,7 @@ const app = express();
 dotenv.config();
 app.use(
   cors({
-    origin: "https://resonant-marshmallow-3c4ba8.netlify.app",
+    origin: `${process.env.FRONTEND_URL}`,
   })
 );
 app.use(bodyParser.json());
@@ -64,16 +64,31 @@ app.post("/workflow-complete", (req, res) => {
 });
 
 app.get("/task-status", (req, res) => {
-  console.log();
+  // console.log();
   if (taskStatus === "completed" && completedAt) {
-    const diff = Date.now() - completedAt;
-    if (diff < 60 * 1000) {
-      return res.json({ status: "sleep" }); // sleep for 4 hours
-    } else {
-      taskStatus = "Submit"; // reset after 4 hours
-    }
+    // const diff = Date.now() - completedAt;
+    // if (diff < 60 * 1000) {
+    //   return res.json({ status: "completed" }); // sleep for 4 hours
+    // } else {
+    //   taskStatus = "Submit"; // reset after 4 hours
+    // }
+    res.json({ status: taskStatus });
   }
-  res.json({ status: taskStatus });
+  // res.json({ status: taskStatus });
+});
+
+let creditStatus = null;
+app.post("/out-of-credit", (req, res) => {
+  creditStatus = true;
+  // console.log(res.json());
+  res.json({ ok: true });
+});
+
+app.get("/credit", (req, res) => {
+  if (creditStatus == true) {
+    return res.json({ message: creditStatus });
+  }
+  res.json({ message: creditStatus });
 });
 
 // app.get("/products", (req, res, next) => {
