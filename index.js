@@ -6,7 +6,7 @@ const app = express();
 dotenv.config();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://resonant-marshmallow-3c4ba8.netlify.app",
   })
 );
 app.use(bodyParser.json());
