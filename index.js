@@ -41,7 +41,7 @@ app.post("/products", async (req, res, next) => {
     console.log(err.message);
   }
 
-  next();
+  // next();
 });
 
 app.post("/signin", (req, res, next) => {
@@ -55,41 +55,80 @@ app.post("/signin", (req, res, next) => {
   }
 });
 let taskStatus = "Submit";
-let completedAt = null;
+// let completedAt = null;
+
+// app.post("/workflow-complete", (req, res) => {
+//   taskStatus = "completed";
+//   completedAt = Date.now();
+//   res.json({ ok: true });
+// });
+
+let creditStatus = null;
+let arr = [];
+let arr1 = [];
+app.post("/out-of-credit", (req, res, next) => {
+  // creditStatus = true;
+
+  if (Number(req.body.status) > 400 && Number(req.body.status) < 500) {
+    // console.log(req.body.name);
+    arr.push(req.body.name);
+    // if (arr.length == 4) {
+    //   taskStatus = "completed";
+    // }
+    // return res.json({ ok: false });
+  } else if (req.body.status === "true") {
+    arr1.push(req.body.name);
+    // if (arr1.length == 4) {
+    //   taskStatus = "completed";
+    // }
+  } else {
+    creditStatus = true;
+  }
+  res.json({ ok: creditStatus });
+  next();
+});
 
 app.post("/workflow-complete", (req, res) => {
   taskStatus = "completed";
-  completedAt = Date.now();
+  // completedAt = Date.now();
   res.json({ ok: true });
 });
 
 app.get("/task-status", (req, res) => {
   // console.log();
-  if (taskStatus === "completed" && completedAt) {
-    // const diff = Date.now() - completedAt;
-    // if (diff < 60 * 1000) {
-    //   return res.json({ status: "completed" }); // sleep for 4 hours
-    // } else {
-    //   taskStatus = "Submit"; // reset after 4 hours
-    // }
-    res.json({ status: taskStatus });
+  if (arr.length == 4 || arr1.length == 4) {
+    taskStatus = "Submit";
+    res.json({ status: arr, notFound: arr1, status1: true });
+    arr = [];
+    arr1 = [];
+  } else if (taskStatus === "completed") {
+    taskStatus = "Submit";
+    console.log(arr, arr1);
+    res.json({ status: arr, notFound: arr1, status1: true });
+    arr = [];
+    arr1 = [];
+  } else {
+    res.json({ status: arr, notFound: arr1, status1: false });
   }
+
+  // if (taskStatus === "completed" && completedAt) {
+  //   // const diff = Date.now() - completedAt;
+  //   // if (diff < 60 * 1000) {
+  //   //   return res.json({ status: "completed" }); // sleep for 4 hours
+  //   // } else {
+  //   //   taskStatus = "Submit"; // reset after 4 hours
+  //   // }
+  //   return res.json({ status: taskStatus });
+  // }
   // res.json({ status: taskStatus });
 });
 
-let creditStatus = null;
-app.post("/out-of-credit", (req, res) => {
-  creditStatus = true;
-  // console.log(res.json());
-  res.json({ ok: true });
-});
-
-app.get("/credit", (req, res) => {
-  if (creditStatus == true) {
-    return res.json({ message: creditStatus });
-  }
-  res.json({ message: creditStatus });
-});
+// app.get("/credit", (req, res) => {
+//   if (creditStatus == true) {
+//     return res.json({ message: creditStatus });
+//   }
+//   res.json({ message: creditStatus });
+// });
 
 // app.get("/products", (req, res, next) => {
 //   //   console.log("My name is Abhilash");
