@@ -109,6 +109,8 @@ app.get("/task-status", (req, res) => {
     arr1 = [];
   } else {
     res.json({ status: arr, notFound: arr1, status1: false });
+    arr = [];
+    arr1 = [];
   }
 
   // if (taskStatus === "completed" && completedAt) {
